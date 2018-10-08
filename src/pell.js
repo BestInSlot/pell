@@ -103,8 +103,6 @@ const defaultClasses = {
   submitButton: "pell-submit-button"
 };
 
-let isDisabled = true;
-
 export const toggleDisable = () => {
   document
     .querySelector(defaultClasses.submitButton)
@@ -128,7 +126,7 @@ export const init = settings => {
 
   const submitContainer = createElement("span");
   const submitButton = createElement("button");
-  const buttonText = createTextNode(settings.buttonText || "SUBMIT")
+  const buttonText = createTextNode(settings.buttonText || "SUBMIT");
   submitContainer.className = settings.classes.submitContainerClass;
   submitButton.className = settings.classes.submitButtonClass;
   submitButton.setAttribute = isDisabled;
@@ -136,9 +134,12 @@ export const init = settings => {
   const actionbar = createElement("div");
   actionbar.className = classes.actionbar;
   appendChild(settings.element, actionbar);
-  appendChild(actionbar, submitContainer);
-  appendChild(submitContainer, submitButton);
-  appendChild(submitButton, buttonText);
+  appendChild(document.querySelector(classes.actionbar), submitContainer);
+  appendChild(
+    document.querySelector(classes.submitContainerClass),
+    submitButton
+  );
+  appendChild(document.querySelector(classes.submitButton), buttonText);
 
   const event = new Event("submit", {
     bubbles: true,
