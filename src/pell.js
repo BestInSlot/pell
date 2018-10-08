@@ -7,7 +7,6 @@ const createElement = tag => document.createElement(tag);
 const createTextNode = text => document.createTextNode(text);
 const queryCommandState = command => document.queryCommandState(command);
 const queryCommandValue = command => document.queryCommandValue(command);
-let isDisabled = false;
 
 export const exec = (command, value = null) =>
   document.execCommand(command, false, value);
