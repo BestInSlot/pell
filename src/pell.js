@@ -128,6 +128,7 @@ export const init = settings => {
 
   const submitContainer = createElement("span");
   const submitButton = createElement("button");
+  const buttonText = createTextNode(settings.buttonText || "SUBMIT")
   submitContainer.className = settings.classes.submitContainerClass;
   submitButton.className = settings.classes.submitButtonClass;
   submitButton.setAttribute = isDisabled;
@@ -137,7 +138,7 @@ export const init = settings => {
   appendChild(settings.element, actionbar);
   appendChild(actionbar, submitContainer);
   appendChild(submitContainer, submitButton);
-  appendChild(submitButton, createTextNode(settings.buttonText));
+  appendChild(submitButton, buttonText);
 
   const event = new Event("submit", {
     bubbles: true,
