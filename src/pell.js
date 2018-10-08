@@ -4,8 +4,10 @@ const addEventListener = (parent, type, listener) =>
   parent.addEventListener(type, listener);
 const appendChild = (parent, child) => parent.appendChild(child);
 const createElement = tag => document.createElement(tag);
+const createTextNode = text => document.createTextNode(text);
 const queryCommandState = command => document.queryCommandState(command);
 const queryCommandValue = command => document.queryCommandValue(command);
+let isDisabled = false;
 
 export const exec = (command, value = null) =>
   document.execCommand(command, false, value);
@@ -102,6 +104,14 @@ const defaultClasses = {
   submitButton: "pell-submit-button"
 };
 
+let isDisabled = true;
+
+export const toggleDisable = () => {
+  document
+    .querySelector(defaultClasses.submitButton)
+    .setAttribute("disabled", !isDisabled);
+};
+
 export const init = settings => {
   const actions = settings.actions
     ? settings.actions.map(action => {
@@ -121,12 +131,14 @@ export const init = settings => {
   const submitButton = createElement("button");
   submitContainer.className = settings.classes.submitContainerClass;
   submitButton.className = settings.classes.submitButtonClass;
+  submitButton.setAttribute = isDisabled;
 
   const actionbar = createElement("div");
   actionbar.className = classes.actionbar;
   appendChild(settings.element, actionbar);
   appendChild(actionbar, submitContainer);
   appendChild(submitContainer, submitButton);
+  appendChild(submitButton, createTextNode(settings.buttonText));
 
   const event = new Event("submit", {
     bubbles: true,
