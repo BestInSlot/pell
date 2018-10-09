@@ -1,3 +1,5 @@
+/* eslint-disable */
+"use strict";
 const defaultParagraphSeparatorString = "defaultParagraphSeparator";
 const formatBlock = "formatBlock";
 const addEventListener = (parent, type, listener) =>
@@ -126,7 +128,7 @@ export const init = settings => {
 
   const submitContainer = createElement("span");
   const submitButton = createElement("button");
-  const buttonText = createTextNode(settings.buttonText || "SUBMIT");
+  // const buttonText = createTextNode(settings.buttonText || "SUBMIT")
   submitContainer.className = settings.classes.submitContainerClass;
   submitButton.className = settings.classes.submitButtonClass;
   submitButton.setAttribute = isDisabled;
@@ -134,12 +136,9 @@ export const init = settings => {
   const actionbar = createElement("div");
   actionbar.className = classes.actionbar;
   appendChild(settings.element, actionbar);
-  appendChild(document.querySelector(classes.actionbar), submitContainer);
-  appendChild(
-    document.querySelector(classes.submitContainerClass),
-    submitButton
-  );
-  appendChild(document.querySelector(classes.submitButton), buttonText);
+  appendChild(actionbar, submitContainer);
+  appendChild(submitContainer, submitButton);
+  appendChild(submitButton, buttonText);
 
   const event = new Event("submit", {
     bubbles: true,
@@ -194,4 +193,4 @@ export const init = settings => {
   return settings.element;
 };
 
-export default { exec, init };
+export default { init, exec, toggleDisable };
