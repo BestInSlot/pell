@@ -18,6 +18,9 @@ var appendChild = function appendChild(parent, child) {
 var createElement = function createElement(tag) {
   return document.createElement(tag);
 };
+var createTextNode = function createTextNode(text) {
+  return document.createTextNode(text);
+};
 var queryCommandState = function queryCommandState(command) {
   return document.queryCommandState(command);
 };
@@ -155,7 +158,9 @@ var defaultClasses = {
 };
 
 var toggleDisable = function toggleDisable() {
-  document.querySelector(defaultClasses.submitButton).setAttribute("disabled", !isDisabled);
+  document.querySelector(defaultClasses.submitButton.split(" ").map(function (_class) {
+    return "." + _class;
+  }).join(" ").trim()).setAttribute("disabled", !isDisabled);
 };
 
 var init = function init(settings) {
@@ -172,7 +177,7 @@ var init = function init(settings) {
 
   var submitContainer = createElement("span");
   var submitButton = createElement("button");
-  // const buttonText = createTextNode(settings.buttonText || "SUBMIT")
+  var buttonText = createTextNode(settings.buttonText);
   submitContainer.className = settings.classes.submitContainerClass;
   submitButton.className = settings.classes.submitButtonClass;
   submitButton.setAttribute("disabled", true);
