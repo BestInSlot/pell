@@ -107,7 +107,13 @@ const defaultClasses = {
 
 export const toggleDisable = () => {
   document
-    .querySelector(defaultClasses.submitButton)
+    .querySelector(
+      defaultClasses.submitButton
+        .split(" ")
+        .map(_class => `.${_class}`)
+        .join(" ")
+        .trim()
+    )
     .setAttribute("disabled", !isDisabled);
 };
 
@@ -128,10 +134,10 @@ export const init = settings => {
 
   const submitContainer = createElement("span");
   const submitButton = createElement("button");
-  // const buttonText = createTextNode(settings.buttonText || "SUBMIT")
+  const buttonText = createTextNode(settings.buttonText)
   submitContainer.className = settings.classes.submitContainerClass;
   submitButton.className = settings.classes.submitButtonClass;
-  submitButton.setAttribute = isDisabled;
+  submitButton.setAttribute("disabled", true);
 
   const actionbar = createElement("div");
   actionbar.className = classes.actionbar;

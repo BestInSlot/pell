@@ -175,7 +175,7 @@ var init = function init(settings) {
   // const buttonText = createTextNode(settings.buttonText || "SUBMIT")
   submitContainer.className = settings.classes.submitContainerClass;
   submitButton.className = settings.classes.submitButtonClass;
-  submitButton.setAttribute = isDisabled;
+  submitButton.setAttribute("disabled", true);
 
   var actionbar = createElement("div");
   actionbar.className = classes.actionbar;
