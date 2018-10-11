@@ -105,16 +105,8 @@ const defaultClasses = {
   submitButton: "pell-submit-button"
 };
 
-export const toggleDisable = () => {
-  document
-    .querySelector(
-      defaultClasses.submitButton
-        .split(" ")
-        .map(_class => `.${_class}`)
-        .join(" ")
-        .trim()
-    )
-    .setAttribute("disabled", !isDisabled);
+export const toggleDisable = bool => {
+  document.querySelector(".comment-button").setAttribute("disabled", bool);
 };
 
 export const init = settings => {
@@ -132,26 +124,9 @@ export const init = settings => {
   const defaultParagraphSeparator =
     settings[defaultParagraphSeparatorString] || "div";
 
-  const submitContainer = createElement("span");
-  const submitButton = createElement("button");
-  const buttonText = createTextNode(settings.buttonText)
-  submitContainer.className = settings.classes.submitContainerClass;
-  submitButton.className = settings.classes.submitButtonClass;
-  submitButton.setAttribute("disabled", true);
-
   const actionbar = createElement("div");
   actionbar.className = classes.actionbar;
   appendChild(settings.element, actionbar);
-  appendChild(actionbar, submitContainer);
-  appendChild(submitContainer, submitButton);
-  appendChild(submitButton, buttonText);
-
-  const event = new Event("submit", {
-    bubbles: true,
-    cancelable: true
-  });
-
-  submitButton.onclick = () => submitButton.dispatchEvent(event);
 
   const content = (settings.element.content = createElement("div"));
   content.contentEditable = true;
@@ -192,6 +167,31 @@ export const init = settings => {
 
     appendChild(actionbar, button);
   });
+
+  const hasSubmitButton =
+    typeof settings.hasSubmitButton === undefined
+      ? false
+      : settings.hasSubmitButton;
+
+  if (hasSubmitButton) {
+    const submitContainer = createElement("span");
+    const submitButton = createElement("button");
+    const text = settings.buttonText || "SUBMIT";
+    const buttonText = createTextNode(text);
+    submitContainer.className = classes.submitContainer;
+    submitButton.className = classes.submitButton;
+    submitButton.setAttribute("disabled", true);
+    appendChild(actionbar, submitContainer);
+    appendChild(submitContainer, submitButton);
+    appendChild(submitButton, buttonText);
+
+    const event = new Event("comment", {
+      bubbles: true,
+      cancelable: true
+    });
+
+    submitButton.onclick = () => submitButton.dispatchEvent(event);
+  }
 
   if (settings.styleWithCSS) exec("styleWithCSS");
   exec(defaultParagraphSeparatorString, defaultParagraphSeparator);

@@ -5,6 +5,8 @@
 }(this, (function (exports) { 'use strict';
 
 /* eslint-disable */
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var defaultParagraphSeparatorString = "defaultParagraphSeparator";
@@ -157,10 +159,8 @@ var defaultClasses = {
   submitButton: "pell-submit-button"
 };
 
-var toggleDisable = function toggleDisable() {
-  document.querySelector(defaultClasses.submitButton.split(" ").map(function (_class) {
-    return "." + _class;
-  }).join(" ").trim()).setAttribute("disabled", !isDisabled);
+var toggleDisable = function toggleDisable(bool) {
+  document.querySelector(".comment-button").setAttribute("disabled", bool);
 };
 
 var init = function init(settings) {
@@ -175,28 +175,9 @@ var init = function init(settings) {
 
   var defaultParagraphSeparator = settings[defaultParagraphSeparatorString] || "div";
 
-  var submitContainer = createElement("span");
-  var submitButton = createElement("button");
-  var buttonText = createTextNode(settings.buttonText);
-  submitContainer.className = settings.classes.submitContainerClass;
-  submitButton.className = settings.classes.submitButtonClass;
-  submitButton.setAttribute("disabled", true);
-
   var actionbar = createElement("div");
   actionbar.className = classes.actionbar;
   appendChild(settings.element, actionbar);
-  appendChild(actionbar, submitContainer);
-  appendChild(submitContainer, submitButton);
-  appendChild(submitButton, buttonText);
-
-  var event = new Event("submit", {
-    bubbles: true,
-    cancelable: true
-  });
-
-  submitButton.onclick = function () {
-    return submitButton.dispatchEvent(event);
-  };
 
   var content = settings.element.content = createElement("div");
   content.contentEditable = true;
@@ -239,6 +220,30 @@ var init = function init(settings) {
 
     appendChild(actionbar, button);
   });
+
+  var hasSubmitButton = _typeof(settings.hasSubmitButton) === undefined ? false : settings.hasSubmitButton;
+
+  if (hasSubmitButton) {
+    var submitContainer = createElement("span");
+    var submitButton = createElement("button");
+    var text = settings.buttonText || "SUBMIT";
+    var buttonText = createTextNode(text);
+    submitContainer.className = classes.submitContainer;
+    submitButton.className = classes.submitButton;
+    submitButton.setAttribute("disabled", true);
+    appendChild(actionbar, submitContainer);
+    appendChild(submitContainer, submitButton);
+    appendChild(submitButton, buttonText);
+
+    var event = new Event("comment", {
+      bubbles: true,
+      cancelable: true
+    });
+
+    submitButton.onclick = function () {
+      return submitButton.dispatchEvent(event);
+    };
+  }
 
   if (settings.styleWithCSS) exec("styleWithCSS");
   exec(defaultParagraphSeparatorString, defaultParagraphSeparator);
