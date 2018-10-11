@@ -1,8 +1,10 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(factory((global.pell = {})));
-}(this, (function (exports) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('lodash.debounce')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'lodash.debounce'], factory) :
+	(factory((global.pell = {}),global.debounce));
+}(this, (function (exports,debounce) { 'use strict';
+
+debounce = debounce && 'default' in debounce ? debounce['default'] : debounce;
 
 /* eslint-disable */
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -159,9 +161,14 @@ var defaultClasses = {
   submitButton: "pell-submit-button"
 };
 
-var toggleDisable = function toggleDisable(bool) {
-  document.querySelector(".comment-button").setAttribute("disabled", bool);
-};
+var isDisabled = true;
+
+function toggleButton(val) {
+  //strip the html and spaces, we're only interested in alphanumeric characters.
+  var pattern = /<([^>]+)>/gi;
+  var text = val.replace(pattern, "").replace(/\s/g, "").trim();
+  isDisabled = text.length === 0 || !val;
+}
 
 var init = function init(settings) {
   var actions = settings.actions ? settings.actions.map(function (action) {
@@ -172,6 +179,8 @@ var init = function init(settings) {
   });
 
   var classes = _extends({}, defaultClasses, settings.classes);
+
+  var hasSubmitButton = _typeof(settings.hasSubmitButton) === undefined ? false : settings.hasSubmitButton;
 
   var defaultParagraphSeparator = settings[defaultParagraphSeparatorString] || "div";
 
@@ -185,8 +194,11 @@ var init = function init(settings) {
   content.oninput = function (_ref) {
     var firstChild = _ref.target.firstChild;
 
-    if (firstChild && firstChild.nodeType === 3) exec(formatBlock, "<" + defaultParagraphSeparator + ">");else if (content.innerHTML === "<br>") content.innerHTML = "";
+    if (firstChild && firstChild.nodeType === 3) {
+      exec(formatBlock, "<" + defaultParagraphSeparator + ">");
+    } else if (content.innerHTML === "<br>") content.innerHTML = "";
     settings.onChange(content.innerHTML);
+    if (hasSubmitButton) debounce(toggleButton(content.innerHTML), 500);
   };
   content.onkeydown = function (event) {
     if (event.key === "Tab") {
@@ -221,8 +233,6 @@ var init = function init(settings) {
     appendChild(actionbar, button);
   });
 
-  var hasSubmitButton = _typeof(settings.hasSubmitButton) === undefined ? false : settings.hasSubmitButton;
-
   if (hasSubmitButton) {
     var submitContainer = createElement("span");
     var submitButton = createElement("button");
@@ -230,7 +240,7 @@ var init = function init(settings) {
     var buttonText = createTextNode(text);
     submitContainer.className = classes.submitContainer;
     submitButton.className = classes.submitButton;
-    submitButton.setAttribute("disabled", true);
+    submitButton.setAttribute("disabled", isDisabled);
     appendChild(actionbar, submitContainer);
     appendChild(submitContainer, submitButton);
     appendChild(submitButton, buttonText);
@@ -254,7 +264,6 @@ var init = function init(settings) {
 var pell = { init: init, exec: exec, toggleDisable: toggleDisable };
 
 exports.exec = exec;
-exports.toggleDisable = toggleDisable;
 exports.init = init;
 exports['default'] = pell;
 

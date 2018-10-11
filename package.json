@@ -2,7 +2,7 @@
   "name": "bis-pell",
   "description": "pell - the simplest and smallest WYSIWYG text editor for web, with no dependencies",
   "author": "Jared Reich",
-  "version": "1.0.16",
+  "version": "1.0.19",
   "main": "./dist/pell.min.js",
   "scripts": {
     "dev": "gulp",
@@ -43,5 +43,8 @@
     "rollup-plugin-babel": "2.7.1",
     "rollup-plugin-uglify": "2.0.1",
     "run-sequence": "1.2.2"
+  },
+  "dependencies": {
+    "lodash.debounce": "^4.0.8"
   }
 }

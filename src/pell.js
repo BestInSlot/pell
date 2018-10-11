@@ -10,6 +10,8 @@ const createTextNode = text => document.createTextNode(text);
 const queryCommandState = command => document.queryCommandState(command);
 const queryCommandValue = command => document.queryCommandValue(command);
 
+import debounce from "lodash.debounce";
+
 export const exec = (command, value = null) =>
   document.execCommand(command, false, value);
 
@@ -105,9 +107,17 @@ const defaultClasses = {
   submitButton: "pell-submit-button"
 };
 
-export const toggleDisable = bool => {
-  document.querySelector(".comment-button").setAttribute("disabled", bool);
-};
+let isDisabled = true;
+
+function toggleButton(val) {
+  //strip the html and spaces, we're only interested in alphanumeric characters.
+  const pattern = /<([^>]+)>/gi;
+  const text = val
+    .replace(pattern, "")
+    .replace(/\s/g, "")
+    .trim();
+  isDisabled = text.length === 0 || !val;
+}
 
 export const init = settings => {
   const actions = settings.actions
@@ -121,6 +131,11 @@ export const init = settings => {
 
   const classes = { ...defaultClasses, ...settings.classes };
 
+  const hasSubmitButton =
+    typeof settings.hasSubmitButton === undefined
+      ? false
+      : settings.hasSubmitButton;
+
   const defaultParagraphSeparator =
     settings[defaultParagraphSeparatorString] || "div";
 
@@ -132,10 +147,11 @@ export const init = settings => {
   content.contentEditable = true;
   content.className = classes.content;
   content.oninput = ({ target: { firstChild } }) => {
-    if (firstChild && firstChild.nodeType === 3)
+    if (firstChild && firstChild.nodeType === 3) {
       exec(formatBlock, `<${defaultParagraphSeparator}>`);
-    else if (content.innerHTML === "<br>") content.innerHTML = "";
+    } else if (content.innerHTML === "<br>") content.innerHTML = "";
     settings.onChange(content.innerHTML);
+    if (hasSubmitButton) debounce(toggleButton(content.innerHTML), 500);
   };
   content.onkeydown = event => {
     if (event.key === "Tab") {
@@ -168,11 +184,6 @@ export const init = settings => {
     appendChild(actionbar, button);
   });
 
-  const hasSubmitButton =
-    typeof settings.hasSubmitButton === undefined
-      ? false
-      : settings.hasSubmitButton;
-
   if (hasSubmitButton) {
     const submitContainer = createElement("span");
     const submitButton = createElement("button");
@@ -180,7 +191,7 @@ export const init = settings => {
     const buttonText = createTextNode(text);
     submitContainer.className = classes.submitContainer;
     submitButton.className = classes.submitButton;
-    submitButton.setAttribute("disabled", true);
+    submitButton.setAttribute("disabled", isDisabled);
     appendChild(actionbar, submitContainer);
     appendChild(submitContainer, submitButton);
     appendChild(submitButton, buttonText);
